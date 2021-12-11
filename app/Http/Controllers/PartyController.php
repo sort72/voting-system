@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Party;
+use Exception;
 use Illuminate\Http\Request;
 
 class PartyController extends Controller
@@ -14,7 +15,8 @@ class PartyController extends Controller
      */
     public function index()
     {
-        //
+        $parties = Party::all();
+        return response()->json(['Parties' => $parties], 200);
     }
 
     /**
@@ -35,7 +37,18 @@ class PartyController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try{
+            $new_party=new Party();
+            $new_party->name=$request->input('name');
+            $new_party->nit=$request->input('nit');
+            $new_party->address=$request->input('address');
+            $new_party->picture=$request->input('picture');
+            $new_party->phone_number=$request->input('phone_number');
+            $new_party->admin_id=$request->input('admin_id');
+            $new_party->save();
+            return response()->json(["response"=>"Partido creado exitosamente"], 200);}
+        catch(Exception $e)
+            {return response()->json(["response"=>"Error al crear el partido"], 404);}
     }
 
     /**
@@ -44,9 +57,14 @@ class PartyController extends Controller
      * @param  \App\Models\Party  $party
      * @return \Illuminate\Http\Response
      */
-    public function show(Party $party)
+    public function show($id)
     {
-        //
+        try{
+            $party=Party::findOrFail($id);
+            return response()->json($party,200);}
+        catch(Exception $e){
+            return response()->json(["response"=>"No existe el partido"],404);
+        }
     }
 
     /**
@@ -67,9 +85,24 @@ class PartyController extends Controller
      * @param  \App\Models\Party  $party
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Party $party)
+    public function update(Request $request, $id)
     {
-        //
+        try{
+            $party=Party::findOrFail($id);
+            $newName=$request->input('name');
+            $newaddress=$request->input('address');
+            $newPicture=$request->input('picture');
+            $newPhone=$request->input('phone_number');
+            $newAdmin=$request->input('admin_id');
+            $party->name=$newName==null? $party->name:$newName;
+            $party->address=$newaddress==null? $party->role:$newaddress;
+            $party->picture=$newPicture==null? $party->picture:$newPicture;
+            $party->phone_number=$newPhone==null? $party->phone_number:$newPhone;
+            $party->id_admin=$newAdmin==null? $party->id_admin:$newAdmin;
+            $party->save();
+            return response()->json(["response"=>"Partido editado correctamente"],200);}
+        catch(Exception $e)
+            {return response()->json(["response"=>"Error al crear el partido"],404);}
     }
 
     /**
@@ -78,8 +111,10 @@ class PartyController extends Controller
      * @param  \App\Models\Party  $party
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Party $party)
+    public function destroy($id)
     {
-        //
+        $party=Party::findOrFail($id);
+        $party->delete();
+        return response()->json(["resp"=>"Eliminado exitosamente"],200);
     }
 }
