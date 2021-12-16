@@ -22,21 +22,23 @@ class VoteController extends Controller
     {
         $new_vote=new Vote();
         $today=new DateTime();
-        $election="SELECT * FROM elections WHERE start_date='".$today."'";
-        $election=DB::select($election)[0];
-        $new_vote->user_id=$request->input('user_id');
-        $new_vote->election_candidate_id=$request->input('election_candidate_id');
-        $new_vote->election_id=$election->id;
-        $party="SELECT * from votes WHERE user_id='".$request->input('user_id')."' AND election_id='".$election->id."'";
-        //return response()->json(["response"=>$party], 200);
-        $party=DB::select($party);
-        //$party=Vote::all()->where('user_id','=',$request->input('user_id'))->andWhere('created_at','=',$new_vote->created_at);
-        if($party)
-            {return response()->json(["response"=>'Ya votó'], 200);}
-        else
+        $election=Election::where('start_date',$today->format('Y-m-d'))->first();
+        $new_vote->user_id=intval($request->input('user_id'));
+        $candidate=$request->input('candidate_id');
+        $new_vote->id_election=$election->id;
+        $election_candidate=ElectionCandidate::where('election_id',$election->id)->where('candidate_id',$candidate['id'])->first();
+        $new_vote->election_candidate_id=$election_candidate->id;
+        $vote = Vote::where('user_id',$request->input('user_id'))->where('id_election',$election->id)->first();
+        
+        if(is_null($vote))
         {
             $new_vote->save();
-            return response()->json(["response"=>$new_vote], 200);}
+            return response()->json(["response"=>$new_vote], 200);
+        }
+        else
+        {
+            return response()->json(["response"=>'Ya votó'], 200);
+        }
 
     }
 
@@ -48,7 +50,7 @@ class VoteController extends Controller
             $password = Crypt::decrypt($user->password);
             if($password == $request->input('password'))
             {
-                return response()->json(["response"=>$password], 200);
+                return response()->json(["id"=>$user->id], 200);
             }
             return response()->json(["response"=>'No corresponde a nuestras credenciales'], 404);
         }

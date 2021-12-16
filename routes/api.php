@@ -27,6 +27,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('/usuarios', [UserController::class,'index'])->name('users');//Devuelve todos los usuarios
 Route::get('/usuarios2', [UserController::class,'index2'])->name('users2');//Devuelve todos los usuarios
+Route::get('/usuarios3', [UserController::class,'index3'])->name('users3');//Devuelve todos los usuarios
 Route::post('/usuarios/crear', [UserController::class,'store'])->name('users.create');//Crea un usuario
 Route::get('/usuarios/{user}', [UserController::class,'show'])->name('user.show');//Devuelve un solo usuario
 Route::patch('/usuarios/{user}', [UserController::class,'update'])->name('user.update');//Se le mandan los datos por raw

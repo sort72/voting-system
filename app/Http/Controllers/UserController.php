@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Election;
+use App\Models\ElectionCandidate;
 use App\Models\Votes;
 use Exception;
 use Illuminate\Http\Request;
@@ -30,6 +32,24 @@ class UserController extends Controller
     public function index2()
     {
         $users = User::select('users.name','users.id')->where('role','candidate')->get();
+        return response()->json(['users' => $users], 200);
+    }
+
+    public function index3()
+    {
+        
+        $today=new DateTime();
+        $election=Election::where('start_date',$today->format('Y-m-d'))->first();
+        $electionCandidates = ElectionCandidate::where('election_id',$election->id)->get();
+
+        $users = [];
+        
+        foreach ($electionCandidates as $item)
+        {
+            $user = User::findOrFail($item->candidate_id);
+            $users[]=$user;
+        }
+        
         return response()->json(['users' => $users], 200);
     }
 
