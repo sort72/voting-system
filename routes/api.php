@@ -58,7 +58,7 @@ Route::post('/voto', [VoteController::class,'index'])->name('vote.index');
 Route::get('/reporteListado', [UserController::class,'ListarVotantes'])->name('reportes.uno');
 Route::get('/reporteEleccion/{fecha}', [ElectionController::class,'BuscarFecha'])->name('reportes.dos');
 
-Route::get('/reporteEleccionResultados/{id}', [ElectionController::class,'Resultados'])->name('reportes.tres');
+Route::get('/reporteEleccionResultados/{fecha}', [ElectionController::class,'Resultados'])->name('reportes.tres');
 
 Route::get('/reporteListadoElecciones', [ElectionController::class,'Listar'])->name('reportes.cuatro');
 Route::get('/reporteListadoEleccionesVotante/{id}', [UserController::class,'BuscarVotos'])->name('reportes.cinco');

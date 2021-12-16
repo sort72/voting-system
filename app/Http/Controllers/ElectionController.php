@@ -55,9 +55,13 @@ class ElectionController extends Controller
 
     }
 
-    public function Resultados($id)
+    public function Resultados($fecha)
     {
-        $sqlLanzamiento="SELECT * FROM election_candidates WHERE election_id='".$id."'";
+        $sqlEleccion="SELECT * FROM elections WHERE start_date = '".$fecha."'";
+
+        $Eleccion=DB::select($sqlEleccion)[0];
+        //return response()->json($Eleccion, 200);
+        $sqlLanzamiento="SELECT * FROM election_candidates WHERE election_id='".$Eleccion->id."'";
         $Lanzamientos=DB::select($sqlLanzamiento);
         $array=array();
 
