@@ -28,7 +28,7 @@ class PartyController extends Controller
 
         $sqlPartidos="SELECT p.id,p.name AS partido,u.name AS lider,p.nit,p.address,p.picture,p.phone_number
         FROM parties AS p, users AS u
-        WHERE p.admin_id=u.id ORDER BY name asc";
+        WHERE p.admin_id=u.id ORDER BY p.name asc";
         $parties = DB::select($sqlPartidos);
         return response()->json(['parties' => $parties], 200);
 
