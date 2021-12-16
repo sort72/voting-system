@@ -6,6 +6,7 @@ use App\Models\Candidate;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CandidateController extends Controller
 {
@@ -16,7 +17,10 @@ class CandidateController extends Controller
      */
     public function index()
     {
-        $candidates = Candidate::all();
+        $sqlCandidatos="SELECT c.id,u.name AS Nombre,p.name AS Partido, ele.name AS Eleccion
+        FROM candidates AS c, parties AS p, users AS u, elections AS ele, election_candidates AS ele_c
+        WHERE p.id=c.party_id AND c.user_id=u.id AND ele_c.candidate_id=c.id AND ele.id=ele_c.election_id";
+        $candidates = DB::select($sqlCandidatos);
         return response()->json(['candidates' => $candidates], 200);
     }
 
@@ -56,7 +60,8 @@ class CandidateController extends Controller
      */
     public function show($id)
     {
-        try{$candidate=Candidate::findOrFail($id);
+        try{
+            $candidate=Candidate::findOrFail($id);
             return response()->json($candidate,200);}
         catch(Exception $e)
             {return response()->json(["Error"=>"No existe el candidato"],404);}

@@ -16,7 +16,10 @@ class PartyController extends Controller
      */
     public function index()
     {
-        $parties = Party::all();
+        $sqlPartidos="SELECT p.id,p.name AS partido,u.name AS lider,p.nit,p.address,p.picture,p.phone_number
+        FROM parties AS p, users AS u
+        WHERE p.admin_id=u.id";
+        $parties = DB::select($sqlPartidos);
         return response()->json(['Parties' => $parties], 200);
     }
 
