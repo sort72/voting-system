@@ -5,6 +5,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ElectionController;
 use App\Http\Controllers\ElectionCandidateController;
 use App\Http\Controllers\PartyController;
+use App\Http\Controllers\VoteController;
 use App\Models\Candidate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -51,7 +52,7 @@ Route::get('/candidatos/{candidate}', [CandidateController::class,'show'])->name
 Route::patch('/candidatos/{candidate}', [CandidateController::class,'update'])->name('candidate.update');
 Route::delete('/candidatos/{candidate}', [CandidateController::class,'destroy'])->name('candidate.destroy');
 
-
+Route::post('/voto', [VoteController::class,'index'])->name('vote.index');
 
 //Reportes
 Route::get('/reporteListado', [UserController::class,'ListarVotantes'])->name('reportes.uno');

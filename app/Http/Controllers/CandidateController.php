@@ -21,7 +21,7 @@ class CandidateController extends Controller
         FROM candidates AS c, parties AS p, users AS u, elections AS ele, election_candidates AS ele_c
         WHERE p.id=c.party_id AND c.user_id=u.id AND ele_c.candidate_id=c.id AND ele.id=ele_c.election_id";
         $candidates = DB::select($sqlCandidatos);
-        return response()->json(['candidates' => $candidates], 200);
+        return response()->json([$candidates], 200);
     }
 
     /**

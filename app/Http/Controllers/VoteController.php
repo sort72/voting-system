@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Election;
+use App\Models\ElectionCandidate;
 use App\Models\Vote;
 use Illuminate\Http\Request;
 
@@ -12,9 +14,27 @@ class VoteController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $new_vote=new Vote();
+        $new_vote->user_id=$request->input('user_id');
+        $new_vote->election_candidate_id=$request->input('election_candidate_id');
+        $new_vote->save();
+
+
+        /*$hechos=1;
+        $votesof=Vote::all()->where('user_id','=',$request->input('user_id'));
+        foreach($votesof as $vote)
+            {
+            $electionCandidate=ElectionCandidate::findOrFail($vote->election_candidate_id);
+            if($electionCandidate)
+            }
+
+
+
+        $election=Election::findOrFail($electionCandidate->election_id);*/
+
+        return response()->json(["response"=>$new_vote], 200);
     }
 
     /**
