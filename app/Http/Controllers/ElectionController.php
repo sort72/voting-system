@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Election;
+use App\Models\Candidate;
 use Exception;
 use Illuminate\Http\Request;
 use DateTime;
@@ -31,7 +32,7 @@ class ElectionController extends Controller
     }
 
     public function BuscarFecha($fecha){
-        $sqlElecciones="SELECT * FROM elections WHERE start_date < '".$fecha."' AND end_date > '".$fecha."'";
+        $sqlElecciones="SELECT * FROM elections WHERE start_date >= '".$fecha."' AND end_date <= '".$fecha."'";
         $Elecciones=DB::select($sqlElecciones);
         $array=array();
         foreach($Elecciones as $Eleccion)
@@ -105,7 +106,6 @@ class ElectionController extends Controller
             $fechaInicio=$request->input('start_date');
             $fechaFin=$request->input('end_date');
             $hoy=new DateTime();
-
             $sqlElecciones="SELECT count(*) as res FROM elections WHERE (start_date <= '".$fechaInicio."' AND end_date >= '".$fechaInicio."') OR (start_date <= '".$fechaFin."' AND end_date >= '".$fechaFin."')";//Dudoso
             //$TotalEleccionesDia=DB::select($sqlElecciones)[0];
             //return response()->json(["resp"=>$TotalEleccionesDia->res], 200);
@@ -119,8 +119,16 @@ class ElectionController extends Controller
                     $new_election->name=$request->input('name');
                     $new_election->description=$request->input('description');
                     $new_election->start_date=$request->input('start_date');
-                    $new_election->end_date=$request->input('end_date');
+                    $new_election->end_date=$request->input('start_date');
                     $new_election->save();
+
+                    $candidates =$request->input('candidates');
+
+                    foreach($candidates as $candidateId)
+                    {
+                        $candidate = Candidate::where('user_id',$candidateId['id'])->first();
+                        $candidate->elections()->attach($new_election->id);
+                    }
                     return response()->json(["resp"=>"Eleccion creado exitosamente"], 200);}
             else
                 {return response()->json(["resp"=>"La elección no puede ser hoy ni dias antes"], 200);}}

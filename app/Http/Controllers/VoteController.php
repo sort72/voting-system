@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Election;
+use App\Models\User;
 use App\Models\ElectionCandidate;
 use App\Models\Vote;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Crypt;
 
 class VoteController extends Controller
 {
@@ -32,6 +34,25 @@ class VoteController extends Controller
         {
             $new_vote->save();
             return response()->json(["response"=>$new_vote], 200);}
+
+    }
+
+    public function auth(Request $request)
+    {
+        $user = User::where('email',$request->input('email'))->first();
+        if($user)
+        {
+            $password = Crypt::decrypt($user->password);
+            if($password == $request->input('password'))
+            {
+                return response()->json(["response"=>$password], 200);
+            }
+            return response()->json(["response"=>'No corresponde a nuestras credenciales'], 404);
+        }
+        else
+        {
+            return response()->json(["response"=>'No corresponde a nuestras credenciales'], 404);
+        }
 
     }
 

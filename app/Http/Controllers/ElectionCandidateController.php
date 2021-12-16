@@ -7,7 +7,7 @@ use App\Models\ElectionCandidate;
 use Exception;
 use Illuminate\Http\Request;
 
-class ElectionCandidateController extends Controller
+class Controller extends Controller
 {
     /**
      * Display a listing of the resource.

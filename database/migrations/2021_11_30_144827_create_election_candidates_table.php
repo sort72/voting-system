@@ -15,8 +15,8 @@ class CreateElectionCandidatesTable extends Migration
     {
         Schema::create('election_candidates', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('election_id')->constrained();
-            $table->foreignId('candidate_id')->constrained();
+            $table->foreignId('election_id')->constrained()->onDelete('cascade')->onUpdate('cascade');
+            $table->foreignId('candidate_id')->constrained()->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }

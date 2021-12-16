@@ -10,6 +10,7 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Carbon;
 use DateTime;
+use Illuminate\Support\Facades\Crypt;
 
 class UserController extends Controller
 {
@@ -23,6 +24,12 @@ class UserController extends Controller
     public function index()
     {
         $users = User::all();
+        return response()->json(['users' => $users], 200);
+    }
+
+    public function index2()
+    {
+        $users = User::select('users.name','users.id')->where('role','candidate')->get();
         return response()->json(['users' => $users], 200);
     }
 
@@ -131,7 +138,7 @@ class UserController extends Controller
             $new_user->document=$request->input('document');
             $new_user->birth_date=$request->input('birth_date');
             $new_user->photo=$request->input('photo');
-            $new_user->password=$request->input('password');
+            $new_user->password=Crypt::encrypt($request->input('password'));
             $new_user->phone_number=$request->input('phone_number');
             $new_user->role='citizen';
             $new_user->save();
@@ -181,7 +188,7 @@ class UserController extends Controller
         $newName=$request->input('name');
         $newRol=$request->input('role');
         $newPhoto=$request->input('photo');
-        $newPassword=$request->input('password');
+        $newPassword=Crypt::encrypt($request->input('password'));
         $newPhone=$request->input('phone');
         $newDate=$request->input('Date');
         $user->name=$newName==null? $user->name:$newName;
