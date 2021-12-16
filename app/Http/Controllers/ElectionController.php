@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Election;
 use Exception;
 use Illuminate\Http\Request;
+use DateTime;
+use Illuminate\Support\Facades\DB;
 
 class ElectionController extends Controller
 {
@@ -17,6 +19,48 @@ class ElectionController extends Controller
     {
         $elections = Election::all();
         return response()->json(['elections' => $elections], 200);
+    }
+
+    public function Listar(){
+        $date_today=new DateTime();
+        $sqlElecciones="SELECT * FROM elections WHERE start_date <='".$date_today->format('Y-m-d H:i:s')."' ORDER BY start_date ASC";
+        //$sqlElecciones="SELECT * FROM elections WHERE start_date BETWEEN '".$date_today->format('Y-m-d H:i:s')."' AND '2021-12-16 02:05:00' ORDER BY start_date ASC"
+        $Elecciones=DB::select($sqlElecciones);
+        return response()->json(['elecciones' => $Elecciones], 200);
+
+    }
+
+    public function BuscarFecha($fecha){
+        $sqlElecciones="SELECT * FROM elections WHERE start_date < '".$fecha."' AND end_date > '".$fecha."'";//Dudoso
+        $Elecciones=DB::select($sqlElecciones);
+        $array=array();
+        foreach($Elecciones as $Eleccion)
+        {
+            $sqlCandidatos="SELECT * FROM election_candidates WHERE election_id='".$Eleccion->id."'";
+            $CandidatosID=DB::select($sqlCandidatos);
+            foreach($CandidatosID as $CandidatoID)
+            {
+
+                $sqlCandidato="SELECT * FROM candidates WHERE id='".$CandidatoID->candidate_id."'";
+                $Candidato=DB::select($sqlCandidato)[0];
+
+                $sqlInfoCandidato="SELECT * FROM users WHERE id='".$Candidato->user_id."'";
+                $InfoCandidato=DB::select($sqlInfoCandidato);
+                //return response()->json(['Candidato' => $InfoCandidato,'sql'=>$sqlInfoCandidato], 200);
+                array_push($array,$InfoCandidato);
+            }
+        }
+
+        return response()->json(['Candidatos' => $array], 200);
+
+    }
+
+    public function Resultados($id)
+    {
+        $sqlEleccion="SELECT * FROM elections WHERE id='".$id."'";
+        $Eleccion=DB::select($sqlEleccion);
+        return response()->json(['Eleccion' => $Eleccion], 200);
+
     }
 
     /**

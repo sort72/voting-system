@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Party;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PartyController extends Controller
 {
@@ -17,6 +18,13 @@ class PartyController extends Controller
     {
         $parties = Party::all();
         return response()->json(['Parties' => $parties], 200);
+    }
+
+    public function PartidosOrden()
+    {
+        $sqlPartidos="SELECT * FROM parties ORDER BY name asc";
+        $Partidos=DB::select($sqlPartidos);
+        return response()->json(['partidos' => $Partidos], 200);
     }
 
     /**

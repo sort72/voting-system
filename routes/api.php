@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ElectionController;
 use App\Http\Controllers\ElectionCandidateController;
 use App\Http\Controllers\PartyController;
 use App\Models\Candidate;
@@ -49,3 +50,18 @@ Route::post('/candidatos/crear', [CandidateController::class,'store'])->name('ca
 Route::get('/candidatos/{candidate}', [CandidateController::class,'show'])->name('candidate.show');
 Route::patch('/candidatos/{candidate}', [CandidateController::class,'update'])->name('candidate.update');
 Route::delete('/candidatos/{candidate}', [CandidateController::class,'destroy'])->name('candidate.destroy');
+
+
+
+//Reportes
+Route::get('/reporteListado', [UserController::class,'ListarVotantes'])->name('reportes.uno');
+Route::get('/reporteEleccion/{fecha}', [ElectionController::class,'BuscarFecha'])->name('reportes.dos');
+
+Route::get('/reporteEleccionResultados/{id}', [ElectionController::class,'Resultados'])->name('reportes.tres');
+
+Route::get('/reporteListadoElecciones', [ElectionController::class,'Listar'])->name('reportes.cuatro');
+Route::get('/reporteListadoEleccionesVotante/{id}', [UserController::class,'BuscarVotos'])->name('reportes.cinco');
+Route::get('/reporteListadoPromedio', [UserController::class,'VotantesPromedio'])->name('reportes.seis');
+Route::get('/reporteListadoPartidos', [PartyController::class,'PartidosOrden'])->name('reportes.siete');
+Route::get('/reporteListadoEdad', [UserController::class,'VotantesEdad'])->name('reportes.ocho');
+

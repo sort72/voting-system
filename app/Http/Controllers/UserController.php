@@ -3,9 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Votes;
 use Exception;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Carbon;
+use DateTime;
 
 class UserController extends Controller
 {
@@ -14,10 +18,82 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+
     public function index()
     {
         $users = User::all();
         return response()->json(['users' => $users], 200);
+    }
+
+    public function ListarVotantes(){
+        $sqlVotantes="SELECT * FROM users";
+        $votantes=DB::select($sqlVotantes);
+        return response()->json(['votants' => $votantes], 200);
+
+    }
+
+    public function VotantesEdad(){
+        $sqlVotantes="SELECT * FROM users";
+        $votantes=DB::select($sqlVotantes);
+        $array=array();
+        foreach($votantes as $votante)
+        {
+            $date_birth=new DateTime($votante->birth_date);
+            $date_today=new DateTime();
+            $diff=$date_today->diff($date_birth);
+            if($diff->y >= 18 && $diff->y <=27)
+                {array_push($array,$votante);}
+        }
+        return response()->json(['votantes entre 18 y 27 anios' => $array], 200);
+
+    }
+
+    public function VotantesPromedio(){
+        $sqlVotantes="SELECT * FROM users";
+        $votantes=DB::select($sqlVotantes);
+        $suma=0;
+        $total=0;
+        $array=array();
+        $date_today=new DateTime();
+        foreach($votantes as $votante)
+        {
+            $date_birth=new DateTime($votante->birth_date);
+            $diff=$date_today->diff($date_birth);
+            $suma+=$diff->y;
+            $total+=1;
+        }
+        $promedio=$suma/$total;
+        foreach($votantes as $votante)
+        {
+            $date_birth=new DateTime($votante->birth_date);
+            $date_today=new DateTime();
+            $diff=$date_today->diff($date_birth);
+            if($diff->y >= $promedio)
+                {array_push($array,$votante);}
+
+        }
+        return response()->json(['promedio'=>$promedio,'votantes mayores al promedio' => $array], 200);
+    }
+
+    public function BuscarVotos($id){
+        $sqlUsuario="SELECT * FROM users WHERE document=".$id;
+        $Usuario=DB::select($sqlUsuario);
+        $Usuario=$Usuario[0];
+        $sqlVotos="SELECT * FROM votes WHERE user_id=".$Usuario->id;
+        $Votos=DB::select($sqlVotos);
+        $CandidatosFinal=array();
+        foreach($Votos as $Voto)
+        {
+            $sqlCandidato="SELECT * FROM candidates WHERE id=".$Voto->candidate_id;
+            $Candidato=DB::select($sqlCandidato)[0];
+            $sqlCandidatos="SELECT * FROM users WHERE id=".$Candidato->user_id;
+            $Candidatos=DB::select($sqlCandidatos);
+            array_push($CandidatosFinal,$Candidatos);
+        }
+
+        return response()->json(['candidatos_votados'=>$CandidatosFinal], 200);
+
     }
 
     /**
@@ -95,10 +171,15 @@ class UserController extends Controller
         $newRol=$request->input('role');
         $newPhoto=$request->input('photo');
         $newPassword=$request->input('password');
+        $newPhone=$request->input('phone');
+        $newDate=$request->input('Date');
         $user->name=$newName==null? $user->name:$newName;
         $user->role=$newRol==null? $user->role:$newRol;
         $user->photo=$newPhoto==null? $user->photo:$newPhoto;
         $user->password=$newPassword==null? $user->password:$newPassword;
+        $user->phone_number=$newPhone==null? $user->phone_number:$newPhone;
+        $user->birth_date=$newDate==null? $user->birth_date:$newDate;
+
         $user->save();
         return response()->json(["response"=>"Usuario actualizado correctamente"],200);}
         catch(Exception $e)
