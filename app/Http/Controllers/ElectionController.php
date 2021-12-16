@@ -101,20 +101,25 @@ class ElectionController extends Controller
             $fechaInicio=$request->input('start_date');
             $fechaFin=$request->input('end_date');
             $hoy=new DateTime();
-            $sqlElecciones="SELECT count(*) as res FROM elections WHERE (start_date <= '".$fechaInicio."' AND end_date >= '".$fechaInicio."') OR (start_date <= '".$fechaFin."' AND end_date >= '".$fechaFin."')";//Dudoso
-            $TotalEleccionesDia=DB::select($sqlElecciones)[0];
-            if($TotalEleccionesDia->res==0){
 
-                if($fechaInicio>$hoy){
-                $new_election=new Election();
-                $new_election->name=$request->input('name');
-                $new_election->description=$request->input('description');
-                $new_election->start_date=$request->input('start_date');
-                $new_election->end_date=$request->input('end_date');
-                $new_election->save();
-                return response()->json(["resp"=>"Eleccion creado exitosamente"], 200);}
+            $sqlElecciones="SELECT count(*) as res FROM elections WHERE (start_date <= '".$fechaInicio."' AND end_date >= '".$fechaInicio."') OR (start_date <= '".$fechaFin."' AND end_date >= '".$fechaFin."')";//Dudoso
+            //$TotalEleccionesDia=DB::select($sqlElecciones)[0];
+            //return response()->json(["resp"=>$TotalEleccionesDia->res], 200);
+            $TotalEleccionesDia=DB::select($sqlElecciones)[0];
+            $fechaInicio=new DateTime($fechaInicio);
+            if($TotalEleccionesDia->res==0){
+                $diff=$fechaInicio->diff($hoy);
+                //return response()->json(["resp"=>$diff], 200);
+                if($diff->d>=1 && $diff->invert==1){
+                    $new_election=new Election();
+                    $new_election->name=$request->input('name');
+                    $new_election->description=$request->input('description');
+                    $new_election->start_date=$request->input('start_date');
+                    $new_election->end_date=$request->input('end_date');
+                    $new_election->save();
+                    return response()->json(["resp"=>"Eleccion creado exitosamente"], 200);}
             else
-                {return response()->json(["resp"=>"La elección no puede ser hoy"], 200);}}
+                {return response()->json(["resp"=>"La elección no puede ser hoy ni dias antes"], 200);}}
             else
             {return response()->json(["resp"=>"Ya hay elecciones en esa fecha"], 200);}
         }
