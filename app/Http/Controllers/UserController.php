@@ -85,7 +85,7 @@ class UserController extends Controller
         $CandidatosFinal=array();
         foreach($Votos as $Voto)
         {
-            $sqlCandidato="SELECT * FROM candidates WHERE id=".$Voto->candidate_id;
+            $sqlCandidato="SELECT * FROM candidates WHERE id=".$Voto->election_candidate_id;
             $Candidato=DB::select($sqlCandidato)[0];
             $sqlCandidatos="SELECT * FROM users WHERE id=".$Candidato->user_id;
             $Candidatos=DB::select($sqlCandidatos);
