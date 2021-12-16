@@ -17,7 +17,7 @@ class CreateCandidatesTable extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained();
             $table->foreignId('party_id')->constrained();
-            $table->foreignId('election_id')->constrained();
+            //$table->foreignId('election_id')->constrained();
             $table->timestamps();
         });
     }

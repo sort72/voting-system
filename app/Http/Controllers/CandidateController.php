@@ -41,7 +41,7 @@ class CandidateController extends Controller
         $new_candidate=new Candidate();
         $new_candidate->user_id=$request->input('candidate_id');
         $new_candidate->party_id=$request->input('party_id');
-        $new_candidate->election_id=$request->input('election_id');
+        //$new_candidate->election_id=$request->input('election_id');
         $new_candidate->save();
         $user=User::findOrFail($request->input('candidate_id'));
         $user->role='candidate';

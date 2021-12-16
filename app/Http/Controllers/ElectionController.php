@@ -31,7 +31,7 @@ class ElectionController extends Controller
     }
 
     public function BuscarFecha($fecha){
-        $sqlElecciones="SELECT * FROM elections WHERE start_date < '".$fecha."' AND end_date > '".$fecha."'";//Dudoso
+        $sqlElecciones="SELECT * FROM elections WHERE start_date < '".$fecha."' AND end_date > '".$fecha."'";
         $Elecciones=DB::select($sqlElecciones);
         $array=array();
         foreach($Elecciones as $Eleccion)
@@ -57,9 +57,25 @@ class ElectionController extends Controller
 
     public function Resultados($id)
     {
-        $sqlEleccion="SELECT * FROM elections WHERE id='".$id."'";
-        $Eleccion=DB::select($sqlEleccion);
-        return response()->json(['Eleccion' => $Eleccion], 200);
+        $sqlLanzamiento="SELECT * FROM election_candidates WHERE election_id='".$id."'";
+        $Lanzamientos=DB::select($sqlLanzamiento);
+        $array=array();
+
+        foreach($Lanzamientos as $Lanzamiento)
+        {
+
+            $sqlConteo="SELECT COUNT(*) AS TotalVotos FROM votes WHERE election_candidate_id='".$Lanzamiento->id."'";
+            $totalVotos=DB::select($sqlConteo)[0];
+
+            $sqlCandidato="SELECT * FROM candidates WHERE id='".$Lanzamiento->candidate_id."'";
+            $Candidato=DB::select($sqlCandidato)[0];
+
+            $sqlUsuario="SELECT * FROM users WHERE id='".$Candidato->user_id."'";
+            $Usuario=DB::select($sqlUsuario)[0];
+            array_push($array,array('candidate'=>$Usuario,'res'=>$totalVotos));
+            //array_push($arrayResultado,$totalVotos);
+        }
+        return response()->json($array, 200);
 
     }
 
@@ -82,15 +98,28 @@ class ElectionController extends Controller
     public function store(Request $request)
     {
         try{
-            $new_election=new Election();
-            $new_election->name=$request->input('name');
-            $new_election->description=$request->input('description');
-            $new_election->start_date=$request->input('start_date');
-            $new_election->end_date=$request->input('end_date');
-            $new_election->save();
-            return response()->json(["resp"=>"Eleccion creado exitosamente"], 200);}
+            $fechaInicio=$request->input('start_date');
+            $fechaFin=$request->input('end_date');
+            $hoy=new DateTime();
+            $sqlElecciones="SELECT count(*) as res FROM elections WHERE (start_date <= '".$fechaInicio."' AND end_date >= '".$fechaInicio."') OR (start_date <= '".$fechaFin."' AND end_date >= '".$fechaFin."')";//Dudoso
+            $TotalEleccionesDia=DB::select($sqlElecciones)[0];
+            if($TotalEleccionesDia->res==0){
+
+                if($fechaInicio>$hoy){
+                $new_election=new Election();
+                $new_election->name=$request->input('name');
+                $new_election->description=$request->input('description');
+                $new_election->start_date=$request->input('start_date');
+                $new_election->end_date=$request->input('end_date');
+                $new_election->save();
+                return response()->json(["resp"=>"Eleccion creado exitosamente"], 200);}
+            else
+                {return response()->json(["resp"=>"La elección no puede ser hoy"], 200);}}
+            else
+            {return response()->json(["resp"=>"Ya hay elecciones en esa fecha"], 200);}
+        }
         catch(Exception $e)
-            {return response()->json(["resp"=>"Error al crear la elección"], 404);}
+            {return response()->json(["resp"=>"Error al crear la elección","error:"=>$e], 404);}
     }
 
     /**
