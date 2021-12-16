@@ -17,6 +17,7 @@ class CreateVotesTable extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained();
             $table->foreignId('election_candidate_id')->constrained();
+            $table->integer('id_election');
             $table->timestamps();
         });
     }

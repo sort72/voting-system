@@ -51,7 +51,7 @@ class ElectionController extends Controller
             }
         }
 
-        return response()->json(['Candidatos' => $array], 200);
+        return response()->json(['candidates' => $array], 200);
 
     }
 

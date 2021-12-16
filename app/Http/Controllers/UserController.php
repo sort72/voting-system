@@ -27,10 +27,19 @@ class UserController extends Controller
     }
 
     public function ListarVotantes(){
+
         $sqlVotantes="SELECT * FROM users";
         $votantes=DB::select($sqlVotantes);
-        return response()->json(['votants' => $votantes], 200);
-
+        $array=array();
+        foreach($votantes as $votante)
+        {
+            $date_birth=new DateTime($votante->birth_date);
+            $date_today=new DateTime();
+            $diff=$date_today->diff($date_birth);
+            if($diff->y >= 18)
+                {array_push($array,$votante);}
+        }
+        return response()->json(['votants' => $array], 200);
     }
 
     public function VotantesEdad(){
@@ -45,7 +54,7 @@ class UserController extends Controller
             if($diff->y >= 18 && $diff->y <=27)
                 {array_push($array,$votante);}
         }
-        return response()->json(['votantes entre 18 y 27 anios' => $array], 200);
+        return response()->json(['votants' => $array], 200);
 
     }
 
@@ -73,7 +82,7 @@ class UserController extends Controller
                 {array_push($array,$votante);}
 
         }
-        return response()->json(['promedio'=>$promedio,'votantes mayores al promedio' => $array], 200);
+        return response()->json(['prom'=>$promedio,'votants' => $array], 200);
     }
 
     public function BuscarVotos($id){
