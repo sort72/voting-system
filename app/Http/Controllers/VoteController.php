@@ -6,6 +6,7 @@ use App\Models\Election;
 use App\Models\User;
 use App\Models\ElectionCandidate;
 use App\Models\Vote;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Crypt;
@@ -17,19 +18,21 @@ class VoteController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function indexa(Request $request)
     {
         $new_vote=new Vote();
+        $today=new DateTime();
+        $election="SELECT * FROM elections WHERE start_date='".$today."'";
+        $election=DB::select($election)[0];
         $new_vote->user_id=$request->input('user_id');
         $new_vote->election_candidate_id=$request->input('election_candidate_id');
-        $new_vote->election_id=$request->input('election_candidate_id');
-        $party="SELECT * from votes WHERE user_id='".$request->input('user_id')."' AND election_id='".$request->input('election_candidate_id')."'";
+        $new_vote->election_id=$election->id;
+        $party="SELECT * from votes WHERE user_id='".$request->input('user_id')."' AND election_id='".$election->id."'";
         //return response()->json(["response"=>$party], 200);
         $party=DB::select($party);
         //$party=Vote::all()->where('user_id','=',$request->input('user_id'))->andWhere('created_at','=',$new_vote->created_at);
         if($party)
-            {return response()->json(["response"=>'Ya votó'], 200);
-            }
+            {return response()->json(["response"=>'Ya votó'], 200);}
         else
         {
             $new_vote->save();

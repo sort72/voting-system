@@ -53,7 +53,7 @@ Route::get('/candidatos/{candidate}', [CandidateController::class,'show'])->name
 Route::patch('/candidatos/{candidate}', [CandidateController::class,'update'])->name('candidate.update');
 Route::delete('/candidatos/{candidate}', [CandidateController::class,'destroy'])->name('candidate.destroy');
 
-Route::post('/voto', [VoteController::class,'index'])->name('vote.index');
+Route::post('/voto', [VoteController::class,'indexa'])->name('vote.index');
 Route::post('/voto/ingresar', [VoteController::class,'auth'])->name('vote.auth');
 
 //Reportes
